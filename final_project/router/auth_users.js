@@ -53,7 +53,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   let book = Object.values(books).find((book) => book["isbn"] === isbn);
   if (book) {
     book["reviews"][req.session.authorization.username] = review;
-    return res.status(200).json({ message: "Review added successfully" + JSON.stringify(book) });
+    return res.status(200).json({ message: "Review added successfully" });
   } else {
     return res.status(404).json({ message: "Book not found", isbn: isbn, books: JSON.stringify(books), type: " " + typeof isbn });
   }
@@ -72,7 +72,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     }
 
     book["reviews"][req.session.authorization.username] = "";
-    return res.status(200).json({ message: "Review deleted successfully" + JSON.stringify(book) });
+    return res.status(200).json({ message: "Review deleted successfully" });
   } else {
     return res.status(404).json({ message: "Book not found", isbn: isbn, books: JSON.stringify(books), type: " " + typeof isbn });
   }

@@ -31,60 +31,86 @@ public_users.post("/register", (req, res) => {
 
 // Get the book list available in the shop
 public_users.get('/', function (req, res) {
-  // let bookList = [];
-  // Object.values(books).forEach((book) => {
-  //   if (book["isbn"]) {
-  //     bookList.push("\'" + book["title"] + "\' by " + book["author"] + ", ISBN: " + book["isbn"]);
-  //   } else {
-  //     bookList.push("\'" + book["title"] + "\' by " + book["author"]);
-  //   }
-  // });
-  // return res.status(200).json({bookList});
-  // return res.status(200).json({ message: "Book list" + JSON.stringify(books) });
-  return res.status(200).json(JSON.stringify(books, null, 2));
+  let listPromise = new Promise((resolve, reject) => {
+    resolve(books);
+    reject("Error getting books");
+  });
+
+  listPromise.then((books) => {
+    return res.status(200).json(books);
+  }).catch((err) => {
+    return res.status(404).json({ message: "Error getting books" });
+  });
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', function (req, res) {
   let isbn = req.params.isbn;
-  let book = Object.values(books).find((book) => book["isbn"] === isbn);
-  if (book) {
-    return res.status(200).json({ message: "Book found" + JSON.stringify(book) });
-  }
-  return res.status(404).json({ message: "Book not found", isbn: isbn });
+
+  let isbnPromise = new Promise((resolve, reject) => {
+    let book = Object.values(books).find((book) => book["isbn"] === isbn);
+    if (book) {
+      resolve(book);
+    }
+    reject("Book not found");
+  });
+
+  isbnPromise.then((book) => {
+    return res.status(200).json(book);
+  }).catch((err) => {
+    return res.status(404).json({ message: "Book not found", isbn: isbn });
+  });
 });
 
 // Get book details based on author
 public_users.get('/author/:author', function (req, res) {
   let author = req.params.author;
-  let book = Object.values(books).find((book) => book["author"] === author);
-  if (book) {
-    return res.status(200).json({ message: "Book found" + JSON.stringify(book) });
-  } else {
+
+  let authorPromise = new Promise((resolve, reject) => {
+    let book = Object.values(books).find((book) => book["author"] === author);
+    resolve(book);
+    reject("Book not found");
+  });
+  
+  authorPromise.then((book) => {
+    return res.status(200).json(book);
+  }).catch((err) => {
     return res.status(404).json({ message: "Book not found", author: author });
-  }
+  });
 });
 
 // Get all books based on title
 public_users.get('/title/:title', function (req, res) {
   let title = req.params.title;
-  let book = Object.values(books).find((book) => book["title"] === title);
-  if (book) {
-    return res.status(200).json({ message: "Book found" + JSON.stringify(book) });
-  } else {
+
+  let titlePromise = new Promise((resolve, reject) => {
+    let book = Object.values(books).find((book) => book["title"] === title);
+    resolve(book);
+    reject("Book not found");
+  });
+  
+  titlePromise.then((book) => {
+    return res.status(200).json(book);
+  }).catch((err) => {
     return res.status(404).json({ message: "Book not found", title: title });
-  }
+  });
 });
 
 //  Get book review
 public_users.get('/review/:isbn', function (req, res) {
   let isbn = req.params.isbn;
-  let book = Object.values(books).find((book) => book["isbn"] === isbn);
-  if (book) {
-    return res.status(200).json({ message: "Book found" + JSON.stringify(book["reviews"]) });
-  } else {
+
+  let reviewPromise = new Promise((resolve, reject) => {
+    let book = Object.values(books).find((book) => book["isbn"] === isbn);
+    resolve(book);
+    reject("Book not found");
+  });
+
+  reviewPromise.then((book) => {
+    return res.status(200).json(book["reviews"]);
+  }).catch((err) => {
     return res.status(404).json({ message: "Book not found", isbn: isbn });
-  }
+  });
 });
 
 module.exports.general = public_users;
